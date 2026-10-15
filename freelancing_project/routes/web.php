@@ -2,10 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminController;
-use app\Http\Controllers\UserController;
-Route::get('/', function () {
-    return view('welcome');
-});
+use App\Http\Controllers\UserController;
+
+
 
 Route::middleware([
     'auth:sanctum',
@@ -16,6 +15,19 @@ Route::middleware([
         return view('dashboard');
     })->name('dashboard');
 });
+
+
+
+Route::get('/', [UserController::class, 'home']);
+
+Route::get('/all-categories', [UserController::class, 'allCategories']);
+
+Route::get('/all-products', [UserController::class, 'allProducts']);
+
+Route::get('/about', [UserController::class, 'about']);
+
+Route::get('/contact', [UserController::class, 'contact']);
+ 
 
 Route::middleware(['auth'])->group(function () {
 
