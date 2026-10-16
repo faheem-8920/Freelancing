@@ -17,6 +17,23 @@ Route::middleware([
 });
 
 
+Route::get('/checkout', [UserController::class, 'checkout']);
+Route::post('/checkout', [UserController::class, 'placeOrder']);
+
+
+// Shopping Cart
+Route::get('/cart', [UserController::class, 'cart']);
+
+Route::post('/cart/add/{id}', [UserController::class, 'addToCart']);
+
+Route::patch('/cart/update/{id}', [UserController::class, 'updateCart']);
+
+Route::delete('/cart/remove/{id}', [UserController::class, 'removeFromCart']);
+
+Route::post('/cart/clear', [UserController::class, 'clearCart']);
+
+Route::get('/contact', [UserController::class, 'contact']);
+Route::post('/contact', [UserController::class, 'sendContact']);
 
 Route::get('/', [UserController::class, 'home']);
 

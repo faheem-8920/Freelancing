@@ -1,3 +1,4 @@
+
 @extends('user.layouts.userlayout')
 
 @section('title', 'Home | ' . ($settings['site_name'] ?? 'Sweet Crumbs Bakery'))
@@ -9,7 +10,49 @@
     $bakeryName = $settings['site_name'] ?? 'Sweet Crumbs';
     $heroTitle = $settings['hero_title'] ?? 'A little sweetness, made with love.';
     $heroDescription = $settings['hero_description'] ?? 'Discover handcrafted cakes, buttery pastries, and delightful treats baked fresh to make your everyday moments special.';
+
+    $categoryFallbacks = [
+        'https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=700&q=80',
+        'https://images.unsplash.com/photo-1550617931-e17a7b70dce2?auto=format&fit=crop&w=700&q=80',
+        'https://images.unsplash.com/photo-1551024506-0bccd828d307?auto=format&fit=crop&w=700&q=80',
+        'https://images.unsplash.com/photo-1509365465985-25d11c17e812?auto=format&fit=crop&w=700&q=80',
+    ];
+
+    $productFallbacks = [
+        'https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=700&q=80',
+        'https://images.unsplash.com/photo-1550617931-e17a7b70dce2?auto=format&fit=crop&w=700&q=80',
+        'https://images.unsplash.com/photo-1551024506-0bccd828d307?auto=format&fit=crop&w=700&q=80',
+        'https://images.unsplash.com/photo-1509365465985-25d11c17e812?auto=format&fit=crop&w=700&q=80',
+    ];
 @endphp
+
+{{-- CART FEEDBACK --}}
+@if (session('success'))
+    <div class="sc-container">
+        <div class="sc-cart-feedback sc-cart-feedback-success" role="status">
+            <span>✓</span>
+            {{ session('success') }}
+        </div>
+    </div>
+@endif
+
+@if (session('error'))
+    <div class="sc-container">
+        <div class="sc-cart-feedback sc-cart-feedback-error" role="alert">
+            <span>!</span>
+            {{ session('error') }}
+        </div>
+    </div>
+@endif
+
+@if ($errors->any())
+    <div class="sc-container">
+        <div class="sc-cart-feedback sc-cart-feedback-error" role="alert">
+            {{ $errors->first() }}
+        </div>
+    </div>
+@endif
+
 
 {{-- HERO SECTION --}}
 <section class="sc-hero">
@@ -98,8 +141,10 @@
             <div class="sc-hero-stamp">
                 <svg viewBox="0 0 120 120" aria-label="Baked with love">
                     <defs>
-                        <path id="sc-circle-path"
-                              d="M60,60 m-42,0 a42,42 0 1,1 84,0 a42,42 0 1,1 -84,0"/>
+                        <path
+                            id="sc-circle-path"
+                            d="M60,60 m-42,0 a42,42 0 1,1 84,0 a42,42 0 1,1 -84,0"
+                        />
                     </defs>
                     <text>
                         <textPath href="#sc-circle-path">
@@ -145,6 +190,7 @@
                 <div class="sc-section-kicker">
                     <span>01 / THE COLLECTION</span>
                 </div>
+
                 <h2 class="sc-heading">
                     Find your kind<br>
                     <em>of sweetness.</em>
@@ -152,7 +198,11 @@
             </div>
 
             <div class="sc-heading-side">
-                <p>From celebration-worthy cakes to everyday little indulgences, there's something waiting to brighten your day.</p>
+                <p>
+                    From celebration-worthy cakes to everyday little indulgences,
+                    there's something waiting to brighten your day.
+                </p>
+
                 <a href="{{ url('/all-categories') }}" class="sc-text-link">
                     Explore all categories <span>↗</span>
                 </a>
@@ -161,27 +211,25 @@
 
         <div class="sc-category-grid">
             @forelse ($categories as $index => $category)
+
                 @php
-                    $categoryFallbacks = [
-                        'https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=700&q=80',
-                        'https://images.unsplash.com/photo-1550617931-e17a7b70dce2?auto=format&fit=crop&w=700&q=80',
-                        'https://images.unsplash.com/photo-1551024506-0bccd828d307?auto=format&fit=crop&w=700&q=80',
-                        'https://images.unsplash.com/photo-1509365465985-25d11c17e812?auto=format&fit=crop&w=700&q=80',
-                    ];
                     $categoryImage = $category->image
                         ? \Illuminate\Support\Facades\Storage::url($category->image)
                         : $categoryFallbacks[$index % count($categoryFallbacks)];
                 @endphp
 
-                <a href="{{ url('/all-products') }}?category={{ $category->id }}"
-                   class="sc-category-card reveal"
-                   style="--card-index: {{ $index }}">
-
+                <a
+                    href="{{ url('/all-products') }}?category={{ $category->id }}"
+                    class="sc-category-card reveal"
+                    style="--card-index: {{ $index }}"
+                >
                     <div class="sc-category-image-wrap">
-                        <img src="{{ $categoryImage }}"
-                             alt="{{ $category->name }}"
-                             class="sc-category-image"
-                             loading="lazy">
+                        <img
+                            src="{{ $categoryImage }}"
+                            alt="{{ $category->name }}"
+                            class="sc-category-image"
+                            loading="lazy"
+                        >
 
                         <span class="sc-category-number">
                             {{ str_pad($index + 1, 2, '0', STR_PAD_LEFT) }}
@@ -198,9 +246,11 @@
                                 delicious creations
                             </p>
                         </div>
+
                         <span class="sc-category-link-icon">↗</span>
                     </div>
                 </a>
+
             @empty
                 <div class="sc-empty-state">
                     <span>🧁</span>
@@ -214,7 +264,7 @@
 </section>
 
 
-{{-- EDITOR'S PICKS / FEATURED PRODUCTS --}}
+{{-- FEATURED PRODUCTS --}}
 <section class="sc-section sc-featured-section">
     <div class="sc-container">
 
@@ -223,6 +273,7 @@
                 <div class="sc-section-kicker">
                     <span>02 / CUSTOMER FAVOURITES</span>
                 </div>
+
                 <h2 class="sc-heading">
                     A few things<br>
                     <em>we love.</em>
@@ -230,7 +281,11 @@
             </div>
 
             <div class="sc-heading-side">
-                <p>Carefully crafted, beautifully presented, and made to turn ordinary moments into something special.</p>
+                <p>
+                    Carefully crafted, beautifully presented, and made to turn
+                    ordinary moments into something special.
+                </p>
+
                 <a href="{{ url('/all-products') }}" class="sc-text-link">
                     View all treats <span>↗</span>
                 </a>
@@ -238,27 +293,29 @@
         </div>
 
         <div class="sc-product-grid">
+
             @forelse ($featuredProducts as $index => $product)
+
                 @php
-                    $productFallbacks = [
-                        'https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=700&q=80',
-                        'https://images.unsplash.com/photo-1550617931-e17a7b70dce2?auto=format&fit=crop&w=700&q=80',
-                        'https://images.unsplash.com/photo-1551024506-0bccd828d307?auto=format&fit=crop&w=700&q=80',
-                        'https://images.unsplash.com/photo-1509365465985-25d11c17e812?auto=format&fit=crop&w=700&q=80',
-                    ];
                     $productImage = $product->image
                         ? \Illuminate\Support\Facades\Storage::url($product->image)
                         : $productFallbacks[$index % count($productFallbacks)];
                 @endphp
 
-                <article class="sc-product-card reveal" style="--card-index: {{ $index }}">
-                    <a href="{{ url('/all-products') }}?search={{ urlencode($product->name) }}"
-                       class="sc-product-image-wrap">
-
-                        <img src="{{ $productImage }}"
-                             alt="{{ $product->name }}"
-                             class="sc-product-image"
-                             loading="lazy">
+                <article
+                    class="sc-product-card reveal"
+                    style="--card-index: {{ $index }}"
+                >
+                    <a
+                        href="{{ url('/all-products') }}?search={{ urlencode($product->name) }}"
+                        class="sc-product-image-wrap"
+                    >
+                        <img
+                            src="{{ $productImage }}"
+                            alt="{{ $product->name }}"
+                            class="sc-product-image"
+                            loading="lazy"
+                        >
 
                         <span class="sc-product-tag">OUR PICK</span>
 
@@ -268,6 +325,7 @@
                     </a>
 
                     <div class="sc-product-details">
+
                         <div class="sc-product-category">
                             {{ $product->category->name ?? 'Freshly baked' }}
                         </div>
@@ -283,25 +341,47 @@
                                 <span class="sc-price-currency">Rs.</span>
                                 {{ number_format((float) $product->price, 0) }}
                             </div>
-
-                            <a href="{{ url('/all-products') }}?search={{ urlencode($product->name) }}"
-                               class="sc-product-add"
-                               aria-label="View {{ $product->name }}">
-                                ↗
-                            </a>
                         </div>
+
+                        {{-- ADD TO CART --}}
+                        <form
+                            action="{{ url('/cart/add/' . $product->id) }}"
+                            method="POST"
+                            class="sc-home-add-cart-form"
+                        >
+                            @csrf
+
+                            <input type="hidden" name="quantity" value="1">
+
+                            <button
+                                type="submit"
+                                class="sc-home-add-cart-btn"
+                                aria-label="Add {{ $product->name }} to cart"
+                            >
+                                <span class="sc-home-cart-icon">＋</span>
+                                <span>Add to Cart</span>
+                                <span class="sc-home-cart-arrow">↗</span>
+                            </button>
+                        </form>
+
                     </div>
                 </article>
+
             @empty
                 <div class="sc-empty-state">
                     <span>🍰</span>
                     <h3>Our favourites are on their way</h3>
-                    <p>Add available featured products from your admin panel to show them here.</p>
+                    <p>
+                        Add available featured products from your admin panel
+                        to show them here.
+                    </p>
+
                     <a href="{{ url('/all-products') }}" class="sc-btn sc-btn-primary">
                         Browse all products ↗
                     </a>
                 </div>
             @endforelse
+
         </div>
 
     </div>
@@ -317,14 +397,16 @@
                 <img
                     src="https://images.unsplash.com/photo-1486427944299-d1955d23e34d?auto=format&fit=crop&w=1000&q=85"
                     alt="Beautiful cupcakes freshly prepared"
-                    loading="lazy">
+                    loading="lazy"
+                >
             </div>
 
             <div class="sc-story-side-image">
                 <img
                     src="https://images.unsplash.com/photo-1499636136210-6f4ee915583e?auto=format&fit=crop&w=600&q=85"
                     alt="Fresh homemade cookies"
-                    loading="lazy">
+                    loading="lazy"
+                >
             </div>
 
             <div class="sc-story-note">
@@ -372,7 +454,7 @@
 
 
 {{-- LATEST PRODUCTS --}}
-@if(isset($products) && $products->count())
+@if (isset($products) && $products->count())
 <section class="sc-section sc-latest-section">
     <div class="sc-container">
 
@@ -381,6 +463,7 @@
                 <div class="sc-section-kicker">
                     <span>04 / FRESHLY ADDED</span>
                 </div>
+
                 <h2 class="sc-heading">
                     New to the<br>
                     <em>sweet side.</em>
@@ -389,6 +472,7 @@
 
             <div class="sc-heading-side">
                 <p>There's always something new to fall in love with.</p>
+
                 <a href="{{ url('/all-products') }}" class="sc-text-link">
                     Shop the collection <span>↗</span>
                 </a>
@@ -397,14 +481,19 @@
 
         <div class="sc-latest-list">
             @foreach ($products->take(4) as $index => $product)
-                <a href="{{ url('/all-products') }}?search={{ urlencode($product->name) }}"
-                   class="sc-latest-item reveal">
+
+                <div class="sc-latest-item reveal">
 
                     <span class="sc-latest-index">
                         {{ str_pad($index + 1, 2, '0', STR_PAD_LEFT) }}
                     </span>
 
-                    <span class="sc-latest-name">{{ $product->name }}</span>
+                    <a
+                        href="{{ url('/all-products') }}?search={{ urlencode($product->name) }}"
+                        class="sc-latest-name"
+                    >
+                        {{ $product->name }}
+                    </a>
 
                     <span class="sc-latest-category">
                         {{ $product->category->name ?? 'Bakery favourite' }}
@@ -414,8 +503,27 @@
                         Rs. {{ number_format((float) $product->price, 0) }}
                     </span>
 
-                    <span class="sc-latest-arrow">↗</span>
-                </a>
+                    {{-- ADD LATEST PRODUCT TO CART --}}
+                    <form
+                        action="{{ url('/cart/add/' . $product->id) }}"
+                        method="POST"
+                        class="sc-latest-cart-form"
+                    >
+                        @csrf
+
+                        <input type="hidden" name="quantity" value="1">
+
+                        <button
+                            type="submit"
+                            class="sc-latest-cart-btn"
+                            aria-label="Add {{ $product->name }} to cart"
+                        >
+                            ＋ Add
+                        </button>
+                    </form>
+
+                </div>
+
             @endforeach
         </div>
 
@@ -483,7 +591,11 @@ document.addEventListener('DOMContentLoaded', function () {
     const hero = document.querySelector('.sc-hero');
     const heroVisual = document.querySelector('.sc-hero-visual');
 
-    if (hero && heroVisual && window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+    if (
+        hero &&
+        heroVisual &&
+        window.matchMedia('(hover: hover) and (pointer: fine)').matches
+    ) {
         hero.addEventListener('mousemove', function (event) {
             const rect = hero.getBoundingClientRect();
             const x = (event.clientX - rect.left) / rect.width - 0.5;

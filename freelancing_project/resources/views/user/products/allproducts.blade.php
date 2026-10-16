@@ -1,10 +1,10 @@
+
 @extends('user.layouts.userlayout')
 
 @section('content')
 
 <main class="all-products-page">
 
-    {{-- HERO --}}
     <section class="ap-hero">
         <div class="ap-hero-decoration ap-hero-decoration-one"></div>
         <div class="ap-hero-decoration ap-hero-decoration-two"></div>
@@ -32,9 +32,30 @@
         </div>
     </section>
 
-    {{-- PRODUCTS --}}
     <section class="ap-section">
         <div class="ap-container">
+
+            {{-- CART NOTIFICATIONS --}}
+            @if(session('cart_success'))
+                <div class="cart-alert cart-alert-success">
+                    <span>✓</span>
+                    <span>{{ session('cart_success') }}</span>
+                    <a href="{{ url('/cart') }}">View Cart →</a>
+                </div>
+            @endif
+
+            @if(session('cart_error'))
+                <div class="cart-alert cart-alert-error">
+                    <span>!</span>
+                    <span>{{ session('cart_error') }}</span>
+                </div>
+            @endif
+
+            @if($errors->any())
+                <div class="cart-alert cart-alert-error">
+                    {{ $errors->first() }}
+                </div>
+            @endif
 
             <div class="ap-heading-row">
                 <div>
@@ -53,7 +74,6 @@
 
             {{-- SEARCH AND FILTERS --}}
             <div class="ap-toolbar">
-
                 <form action="{{ url('/all-products') }}"
                       method="GET"
                       class="ap-filter-form">
@@ -74,8 +94,10 @@
                             aria-label="Search products">
                     </div>
 
-                    <select name="category" class="ap-category-select"
+                    <select name="category"
+                            class="ap-category-select"
                             aria-label="Filter by category">
+
                         <option value="">All Categories</option>
 
                         @foreach($categories as $category)
@@ -92,11 +114,11 @@
                     </button>
 
                     @if(!empty($search) || !empty($categoryId))
-                        <a href="{{ url('/all-products') }}" class="ap-reset-button">
+                        <a href="{{ url('/all-products') }}"
+                           class="ap-reset-button">
                             Reset
                         </a>
                     @endif
-
                 </form>
 
                 <div class="ap-results-info">
@@ -160,7 +182,10 @@
                             <h3>{{ $product->name }}</h3>
 
                             <p class="ap-product-description">
-                                {{ \Illuminate\Support\Str::limit($product->description ?: 'A delicious bakery favourite, prepared fresh with care.', 95) }}
+                                {{ \Illuminate\Support\Str::limit(
+                                    $product->description ?: 'A delicious bakery favourite, prepared fresh with care.',
+                                    95
+                                ) }}
                             </p>
 
                             <div class="ap-card-footer">
@@ -174,10 +199,22 @@
                                    class="ap-view-product">
                                     View Product <span>→</span>
                                 </a>
-
                             </div>
-                        </div>
 
+                            {{-- ADD TO CART --}}
+                            <form action="{{ url('/cart/add/' . $product->id) }}"
+                                  method="POST"
+                                  class="ap-add-cart-form">
+                                @csrf
+
+                                <input type="hidden" name="quantity" value="1">
+
+                                <button type="submit" class="ap-add-cart-btn">
+                                    <span>＋</span> Add to Cart
+                                </button>
+                            </form>
+
+                        </div>
                     </article>
 
                 @empty
@@ -205,7 +242,8 @@
                         </p>
 
                         @if(!empty($search) || !empty($categoryId))
-                            <a href="{{ url('/all-products') }}" class="ap-primary-button">
+                            <a href="{{ url('/all-products') }}"
+                               class="ap-primary-button">
                                 Browse All Products <span>→</span>
                             </a>
                         @endif
@@ -225,7 +263,6 @@
         </div>
     </section>
 
-    {{-- CTA --}}
     <section class="ap-cta-section">
         <div class="ap-container">
             <div class="ap-cta">
